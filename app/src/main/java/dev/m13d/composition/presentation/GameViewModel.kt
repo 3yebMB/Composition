@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import dev.m13d.composition.R
 import dev.m13d.composition.data.GameRepositoryImpl
 import dev.m13d.composition.domain.entity.GameResult
@@ -14,12 +15,13 @@ import dev.m13d.composition.domain.entity.Question
 import dev.m13d.composition.domain.interactor.GetGameSettingsInteractor
 import dev.m13d.composition.domain.interactor.GetNewQuestionInteractor
 
-class GameViewModel(app: Application) : AndroidViewModel(app) {
+class GameViewModel(
+    private val application: Application,
+    private val level: Level
+) : ViewModel() {
 
     private lateinit var gameSettings: GameSettings
-    private lateinit var level: Level
 
-    private val context = app
     private val repository = GameRepositoryImpl
 
     private val getGameSettingsInteractor = GetGameSettingsInteractor(repository)
@@ -67,8 +69,12 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         _question.value = getNewQuestionInteractor(gameSettings.maxSumValue)
     }
 
-    fun startGame(level: Level) {
-        getGameSettings(level)
+    init {
+        startGame()
+    }
+
+    private fun startGame() {
+        getGameSettings()
         startTimer()
         getNewQuestion()
         updateProgress()
@@ -84,7 +90,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val percent = calculatePercentOfRightAnswers()
         _percentOfRightAnswer.value = percent
         _progressAnswers.value = String.format(
-            context.resources.getString(R.string.progress_answers),
+            application.resources.getString(R.string.progress_answers),
             countOfRightAnswers,
             gameSettings.minCountOfRightAnswers
         )
@@ -107,8 +113,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         ++countOfQuestions
     }
 
-    private fun getGameSettings(level: Level) {
-        this.level = level
+    private fun getGameSettings() {
         this.gameSettings = getGameSettingsInteractor(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswers
     }
