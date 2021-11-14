@@ -1,0 +1,9 @@
+package dev.m13d.composition.domain.entity
+
+data class GameSettings(
+
+    val maxSumValue: Int,
+    val minCountOfRightAnswers: Int,
+    val minPercentOfRightAnswers: Int,
+    val gemeTimeInSeconds: Int
+)
