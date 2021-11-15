@@ -1,9 +1,12 @@
 package dev.m13d.composition.domain.entity
 
-data class GameResult(
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
+data class GameResult(
     val winner: Boolean,
     val countOfRightAnswers: Int,
     val countOfQuestions: Int,
-    val gemeSettings: GameSettings
-)
+    val gameSettings: GameSettings
+) : Parcelable
